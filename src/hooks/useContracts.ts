@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import useRunners from "./useRunners";
 import { Contract } from "ethers";
-import { TOKEN_ABI } from "../ABI/token";
+import { PAYROLL_ABI } from "../ABI/payroll";
 
 
 
@@ -13,13 +13,13 @@ export const useTokenContract = (withSigner = false) => {
             if (!signer) return null;
             return new Contract(
                 import.meta.env.VITE_TOKEN_CONTRACT_ADDRESS,
-                TOKEN_ABI,
+                PAYROLL_ABI,
                 signer
             );
         }
         return new Contract(
             import.meta.env.VITE_TOKEN_CONTRACT_ADDRESS,
-            TOKEN_ABI,
+            PAYROLL_ABI,
             readOnlyProvider
         );
     }, [readOnlyProvider, signer, withSigner]);
