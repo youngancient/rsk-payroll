@@ -5,7 +5,7 @@ import { PAYROLL_ABI } from "../ABI/payroll";
 
 
 
-export const useTokenContract = (withSigner = false) => {
+export const usePayrollContract = (withSigner = false) => {
     const { readOnlyProvider, signer } = useRunners();
 
     return useMemo(() => {
