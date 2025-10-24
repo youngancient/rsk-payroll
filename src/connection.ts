@@ -20,8 +20,8 @@ const networks: [CaipNetwork, ...CaipNetwork[]] = [
 
 // 3. Create a metadata object - optional
 const metadata = {
-  name: "Token Minting Dapp",
-  description: "A token minting dapp built on Rootstock",
+  name: "Payroll Dapp",
+  description: "A payroll dapp built on Rootstock",
   url: "https://mywebsite.com",
   icons: ["https://avatars.mywebsite.com/"],
 };

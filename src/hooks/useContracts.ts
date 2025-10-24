@@ -5,20 +5,20 @@ import { PAYROLL_ABI } from "../ABI/payroll";
 
 
 
-export const useTokenContract = (withSigner = false) => {
+export const usePayrollContract = (withSigner = false) => {
     const { readOnlyProvider, signer } = useRunners();
 
     return useMemo(() => {
         if (withSigner) {
             if (!signer) return null;
             return new Contract(
-                import.meta.env.VITE_TOKEN_CONTRACT_ADDRESS,
+                import.meta.env.VITE_PAYROLL_CONTRACT_ADDRESS,
                 PAYROLL_ABI,
                 signer
             );
         }
         return new Contract(
-            import.meta.env.VITE_TOKEN_CONTRACT_ADDRESS,
+            import.meta.env.VITE_PAYROLL_CONTRACT_ADDRESS,
             PAYROLL_ABI,
             readOnlyProvider
         );
