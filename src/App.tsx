@@ -5,6 +5,8 @@ import "./connection.ts";
 import { useState } from "react";
 import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import { formatAddress } from "./utils.ts";
+import { ethers } from "ethers";
+import { useWriteFunctions } from "./hooks/contractHook/useWriteContract.ts";
 
 type PaymentRow = {
   address: string;
@@ -44,14 +46,19 @@ function App() {
   };
 
   const { isConnected, address } = useAppKitAccount();
-  const {open} = useAppKit();
+  const { open } = useAppKit();
+  const {pay, isPaying} = useWriteFunctions();
 
-  const sendPayment =()=>{
-    if (!isConnected){
+  const sendPayment = async () => {
+    if (!isConnected) {
       toast.error("Connect wallet first!");
       return;
     }
+    let totalAmount = 0n;
     const addressRegex = /^0x[a-fA-F0-9]{40}$/;
+    const allAddresses = [];
+    const allAmounts = [];
+
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
 
@@ -73,9 +80,22 @@ function App() {
         toast.error(`Row #${i + 1} has an invalid amount. Must be > 0.`);
         return;
       }
+      try {
+        const amount = ethers.parseEther(row.amount);
+        totalAmount += amount;
+        allAddresses.push(row.address);
+        allAmounts.push(amount);
+      } catch (error) {
+        toast.error(`Row #${i + 1} has a malformed amount.`);
+        return;
+      }
     }
-    toast.success("All checks pass, sending shortly!")
-  }
+    const isPaymentSuccessful = await pay(allAddresses,allAmounts,totalAmount);
+    if (!isPaymentSuccessful){
+      return;
+    }
+    toast.success("Paid all addresses successfully!");
+  };
   return (
     <div className="flex min-h-screen w-full flex-col items-center pt-12 font-sans text-gray-100">
       <header className="flex w-full max-w-5xl items-center justify-between p-4">
@@ -129,12 +149,12 @@ function App() {
             ))}
           </div>
 
-          
           <div className="btns mt-6 flex gap-4">
             <button
               type="button"
               className="flex-1 rounded-lg bg-gray-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-gray-700"
               onClick={addRow}
+              disabled={isPaying}
             >
               Add Row
             </button>
@@ -142,14 +162,14 @@ function App() {
               type="button"
               className="flex-1 rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-blue-700"
               onClick={sendPayment}
+              disabled={isPaying}
             >
-              Send Payment
+              {isPaying ? "Making payment..." : "Send Payment"}
             </button>
           </div>
         </div>
       </div>
 
-  
       <ToastContainer position="bottom-right" theme="dark" autoClose={3000} />
     </div>
   );
